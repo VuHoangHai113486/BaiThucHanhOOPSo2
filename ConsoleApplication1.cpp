@@ -52,9 +52,14 @@ private:
     char kich_thuoc;
     phuong_tien pt1, pt2, pt3;   // sau này dùng mảng
     bool co1, co2, co3;
+    static const int max_xe = 3;
+	phuong_tien phuong_tiens[max_xe];
+	int so_xe_hien_tai;
 
 public:
-    bai_xe();
+    bai_xe() {
+        so_xe_hien_tai = 0;
+    }
     bai_xe(int ma, char kt);
 
     int lay_ma() const;
@@ -63,6 +68,7 @@ public:
     bool chua(int ma_xe) const;
     void hien_thi() const;
     bool co_loai(string loai, int& dem, double& tong) const;
+    bool bai_day() const;
 };
 
 bai_xe::bai_xe() : ma_bai(0), kich_thuoc('S'), co1(false), co2(false), co3(false) {}
@@ -73,9 +79,19 @@ int bai_xe::lay_ma() const { return ma_bai; }
 
 bool bai_xe::them(phuong_tien v) {
     int cap = (kich_thuoc == 'S') ? 1 : (kich_thuoc == 'M') ? 2 : 3;
-    if (cap >= 1 && !co1) { pt1 = v; co1 = true; return true; }
-    if (cap >= 2 && !co2) { pt2 = v; co2 = true; return true; }
-    if (cap >= 3 && !co3) { pt3 = v; co3 = true; return true; }
+    if (cap >= 1 && !co1) { pt1 = v;
+    co1 = true;
+    so_xe_hien_tai++;
+    return true;
+    }
+    if (cap >= 2 && !co2) { pt2 = v; 
+    co2 = true;
+	so_xe_hien_tai++;
+    return true; }
+    if (cap >= 3 && !co3) { pt3 = v; 
+    co3 = true; 
+    so_xe_hien_tai++;
+    return true; }
     return false;
 }
 
@@ -83,19 +99,24 @@ bool bai_xe::xoa(int ma_xe) {
     if (co1 && pt1.lay_ma_xe() == ma_xe) {
         if (co2) {
             pt1 = pt2;
-            if (co3) { pt2 = pt3; co3 = false; }
+            if (co3) { 
+                pt2 = pt3; 
+                co3 = false; }
             else co2 = false;
         }
         else co1 = false;
+        so_xe_hien_tai--;
         return true;
     }
     if (co2 && pt2.lay_ma_xe() == ma_xe) {
         if (co3) { pt2 = pt3; co3 = false; }
         else co2 = false;
+		so_xe_hien_tai--;
         return true;
     }
     if (co3 && pt3.lay_ma_xe() == ma_xe) {
         co3 = false;
+        so_xe_hien_tai--;
         return true;
     }
     return false;
@@ -124,6 +145,19 @@ bool bai_xe::co_loai(string loai, int& dem, double& tong) const {
     if (co2 && pt2.lay_loai_xe() == loai) { ++dem; tong += pt2.tinh_phi(); }
     if (co3 && pt3.lay_loai_xe() == loai) { ++dem; tong += pt3.tinh_phi(); }
     return dem > 0;
+}
+
+bool bai_xe::bai_day() const {
+	if (kich_thuoc == 'S' && co1) {
+		return true;
+    }
+	if (kich_thuoc == 'M' && co1 && co2) {
+		return true;
+	}
+    if (kich_thuoc == 'L' &&co1 && co2 && co3) {
+        return true;
+    }
+    return false;
 }
 
 class SystemInterface {
