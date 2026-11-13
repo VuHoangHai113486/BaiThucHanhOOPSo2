@@ -61,7 +61,7 @@ public:
     bai_xe() {
         so_xe_hien_tai = 0;
     }
-    bai_xe(int ma, char kt);
+    bai_xe(int ma, char kt) ;
 
     int lay_ma() const;
     bool them(phuong_tien v);
@@ -76,7 +76,7 @@ public:
 
 bai_xe::bai_xe() : ma_bai(0), kich_thuoc('S'), co1(false), co2(false), co3(false) {}
 
-bai_xe::bai_xe(int ma, char kt) : ma_bai(ma), kich_thuoc(kt), co1(false), co2(false), co3(false) {}
+bai_xe::bai_xe(int ma, char kt) : so_xe_hien_tai(0) , ma_bai(ma), kich_thuoc(kt), co1(false), co2(false), co3(false) {}
 
 int bai_xe::lay_ma() const { return ma_bai; }
 
@@ -188,15 +188,20 @@ int bai_xe::tim_chi_so_xe(int id_xe) const {
 
 class SystemInterface {
 private:
-    bai_xe bai1, bai2, bai3;   // sau này dùng mảng
-    bool co1, co2, co3;
+	static const int max_bai = 10;
+    bai_xe bai1, bai2, bai3 , bai4, bai5, bai6, bai7, bai8, bai9, bai10;// sau này dùng mảng
+	bai_xe bai_xes[max_bai] = { bai1 , bai2 , bai3 , bai4 , bai5 , bai6 , bai7 , bai8 , bai9 , bai10 };
+    bool co1, co2, co3 , co4, co5, co6, co7, co8, co9, co10;
+	bool co[max_bai] = { co1 , co2 , co3 , co4 , co5 , co6 , co7 , co8 , co9 , co10 };
+	int so_bai_hien_tai;
 
 public:
     SystemInterface();
     void runMenu();
 };
 
-SystemInterface::SystemInterface() : co1(false), co2(false), co3(false) {}
+SystemInterface::SystemInterface() : so_bai_hien_tai(0), co1(false), co2(false), co3(false)
+, co4(false), co5(false), co6(false), co7(false), co8(false), co9(false), co10(false) {}
 
 void SystemInterface::runMenu() {
     int chon;
