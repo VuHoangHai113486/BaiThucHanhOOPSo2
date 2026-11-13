@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include<stdlib.h>
 using namespace std;
 
 class phuong_tien {
@@ -197,11 +198,35 @@ private:
 
 public:
     SystemInterface();
+	bool ton_tai_bai(int ma) const;
+	bool ton_tai_xe(int ma) const;
+	int sinh_id() const;
     void runMenu();
 };
 
 SystemInterface::SystemInterface() : so_bai_hien_tai(0), co1(false), co2(false), co3(false)
 , co4(false), co5(false), co6(false), co7(false), co8(false), co9(false), co10(false) {}
+
+bool SystemInterface::ton_tai_bai(int ma) const {
+	for (int i = 0; i < max_bai; ++i) {
+		if (co[i] && bai_xes[i].lay_ma() == ma) {
+			return true;
+		}
+	}
+	return false;
+}
+bool SystemInterface::ton_tai_xe(int ma) const {
+	for (int i = 0; i < max_bai; ++i) {
+		if (co[i] && bai_xes[i].chua(ma)) {
+			return true;
+		}
+	}
+	return false;
+}
+int SystemInterface::sinh_id() const {
+    srand(time(0));
+    return rand() % 10000;
+}
 
 void SystemInterface::runMenu() {
     int chon;
