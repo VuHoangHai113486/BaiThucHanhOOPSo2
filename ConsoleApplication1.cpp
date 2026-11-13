@@ -53,7 +53,8 @@ private:
     phuong_tien pt1, pt2, pt3;   // sau này dùng mảng
     bool co1, co2, co3;
     static const int max_xe = 3;
-	phuong_tien phuong_tiens[max_xe];
+    bool co[max_xe] = { co1 , co2 ,co3 };
+    phuong_tien phuong_tiens[max_xe] = { pt1 , pt2 , pt3 };
 	int so_xe_hien_tai;
 
 public:
@@ -69,6 +70,8 @@ public:
     void hien_thi() const;
     bool co_loai(string loai, int& dem, double& tong) const;
     bool bai_day() const;
+	bool them_xe_vao(const phuong_tien& v);
+    int tim_chi_so_xe(int id_xe) const;
 };
 
 bai_xe::bai_xe() : ma_bai(0), kich_thuoc('S'), co1(false), co2(false), co3(false) {}
@@ -109,7 +112,10 @@ bool bai_xe::xoa(int ma_xe) {
         return true;
     }
     if (co2 && pt2.lay_ma_xe() == ma_xe) {
-        if (co3) { pt2 = pt3; co3 = false; }
+        if (co3) { 
+            pt2 = pt3; 
+            co3 = false; 
+        }
         else co2 = false;
 		so_xe_hien_tai--;
         return true;
@@ -134,9 +140,11 @@ void bai_xe::hien_thi() const {
     int so_xe = co1 + co2 + co3;
     cout << "Bai " << ma_bai << " [" << kich_thuoc << "] "
         << so_xe << "/" << cap << " xe\n";
-    if (co1) pt1.hien_thi();
-    if (co2) pt2.hien_thi();
-    if (co3) pt3.hien_thi();
+    for(int i = 0 ; i < max_xe ; ++i) {
+        if (co[i]) {
+            phuong_tiens[i].hien_thi();
+        }
+	}
 }
 
 bool bai_xe::co_loai(string loai, int& dem, double& tong) const {
@@ -158,6 +166,24 @@ bool bai_xe::bai_day() const {
         return true;
     }
     return false;
+}
+
+bool bai_xe::them_xe_vao(const phuong_tien& v) {
+    if (co[so_xe_hien_tai]) {
+		phuong_tiens[so_xe_hien_tai] = v;
+        co[so_xe_hien_tai] = true;
+        return true;
+    }
+	return false;
+}
+
+int bai_xe::tim_chi_so_xe(int id_xe) const {
+	for (int i = 0; i < max_xe; ++i) {
+		if (co[i] && phuong_tiens[i].lay_ma_xe() == id_xe) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 class SystemInterface {
