@@ -54,8 +54,6 @@ private:
     phuong_tien pt1, pt2, pt3;   // sau này dùng mảng
     bool co1, co2, co3;
     static const int max_xe = 3;
-    bool co[max_xe] = { co1 , co2 ,co3 };
-    phuong_tien phuong_tiens[max_xe] = { pt1 , pt2 , pt3 };
 	int so_xe_hien_tai;
 
 public:
@@ -63,6 +61,9 @@ public:
         so_xe_hien_tai = 0;
     }
     bai_xe(int ma, char kt) ;
+    bool co[max_xe] = { co1 , co2 ,co3 };
+    phuong_tien phuong_tiens[max_xe] = { pt1 , pt2 , pt3 };
+
 
     int lay_ma() const;
     bool them(phuong_tien v);
@@ -267,6 +268,10 @@ void SystemInterface::runMenu() {
         //các e chuyển sang lệnh switch cho thầy
         switch (chon) {
             case 1: {
+				if (so_bai_hien_tai >= max_bai) {
+					cout << "Bai da day\n";
+					break;
+				}
                 int ma; char kt;
                 cout << "Ma bai: "; cin >> ma;
 				if (ton_tai_bai(ma)) {
@@ -274,23 +279,15 @@ void SystemInterface::runMenu() {
 					ma = sinh_id();
 				}
                 cout << "Kich thuoc (S/M/L): "; cin >> kt;
-                if (!co1) { 
-                    bai1 = bai_xe(ma, kt);
-                    co1 = true; 
-                }
-                else if (!co2) { 
-                    bai2 = bai_xe(ma, kt); 
-                    co2 = true; 
-                }
-                else if(!co3) { 
-                    bai3 = bai_xe(ma, kt); 
-                    co3 = true; 
-                }
-                else {
-                    cout << "Bai da day";
-                    break;
-                }
-                cout << "Da tao bai " << ma << "\n";
+				for (int i = 0; i < max_bai; ++i) {
+					if (!co[i]) {
+						bai_xes[i] = bai_xe(ma, kt);
+						co[i] = true;
+						so_bai_hien_tai++;
+						cout << "Da tao bai " << ma << "\n";
+						break;
+					}
+				}
                 break;
             }
             case 2: {
@@ -304,41 +301,29 @@ void SystemInterface::runMenu() {
                 cout << "Gio vao (0-23): "; cin >> gio;
                 cout << "Thoi luong (1-23): "; cin >> tg;
                 phuong_tien v(ma, loai, gio, tg);
-                bool ok = false;
-                if (co1 && !ok) ok = bai1.them(v);
-                if (co2 && !ok) ok = bai2.them(v);
-                if (co3 && !ok) ok = bai3.them(v);
-                if (ok) cout << "Da them xe " << ma << " | Phi: $" << fixed << setprecision(2) << v.tinh_phi() << "\n";
-                else    cout << "Tat ca bai da day!\n";
+
+				for (int i = 0; i < max_bai; ++i) {
+					if (!co[i]) {
+						bai_xes[i].them(v);
+						cout << "Da them xe " << ma << " vao bai " << bai_xes[i].lay_ma() << "\n";
+                        break;
+					}
+				}
+                cout << "Het bai r";
                 break;
             }
             case 3: {
                 int ma;
                 cout << "Ma bai can xoa: "; cin >> ma;
-                if (co1 && bai1.lay_ma() == ma) {
-                    if (co2) { bai1 = bai2;
-                        if (co3) { 
-                            bai2 = bai3; co3 = false; 
-                        } 
-                        else co2 = false; 
+				for (int i = 0; i < max_bai; ++i) {
+                    if (co[i] && bai_xes[i].lay_ma() == ma) {
+						for (int j = i; j < max_bai; ++j) {
+							bai_xes[j] = bai_xes[j + 1];
+							co[j] = co[j + 1];
+						}
+						cout << "Da xoa bai " << ma << "\n";
+                        break;
                     }
-                    else co1 = false;
-                    cout << "Da xoa bai " << ma << "\n";
-                    break;
-                }
-                else if (co2 && bai2.lay_ma() == ma) {
-                    if (co3) { 
-                        bai2 = bai3; 
-                        co3 = false; 
-                    }
-                    else co2 = false;
-                    cout << "Da xoa bai " << ma << "\n";
-                    break;
-                }
-                else if (co3 && bai3.lay_ma() == ma) {
-                    co3 = false;
-                    cout << "Da xoa bai " << ma << "\n";
-                    break;
                 }
 				cout << "Ko tim thay bai " << ma << "\n";
                 break;
@@ -346,34 +331,47 @@ void SystemInterface::runMenu() {
             case 4: {
                 int ma;
                 cout << "Ma xe can lay ra: "; cin >> ma;
-                bool ok = false;
-                if (co1 && !ok) ok = bai1.xoa(ma);
-                if (co2 && !ok) ok = bai2.xoa(ma);
-                if (co3 && !ok) ok = bai3.xoa(ma);
-                cout << (ok ? "Da lay xe ra\n" : "Khong tim thay xe\n");
+                for (int i = 0; i < max_bai; ++i) {
+                    for (int j = 0; j < 3; ++j) {
+						if (bai_xes[i].phuong_tiens[j].lay_ma_xe() == ma) {
+							bai_xes[i].xoa(ma);
+							cout << "Da lay xe ra\n";
+							break;
+						}
+                    }
+                }
+				cout << "Khong tim thay xe";
                 break;
             }
             case 5: {
-                if (co1) bai1.hien_thi();
-                if (co2) bai2.hien_thi();
-                if (co3) bai3.hien_thi();
+				for (int i = 0; i < so_bai_hien_tai; ++i) {
+                    if (co[i]) {
+                        bai_xes[i].hien_thi();
+                    }
+				}
                 break;
             }
             case 6: {
                 int ma;
                 cout << "Ma bai: "; cin >> ma;
-                if (co1 && bai1.lay_ma() == ma) bai1.hien_thi();
-                else if (co2 && bai2.lay_ma() == ma) bai2.hien_thi();
-                else if (co3 && bai3.lay_ma() == ma) bai3.hien_thi();
+				for (int i = 0; i < max_bai; ++i) {
+					if (co[i] && bai_xes[i].lay_ma() == ma) {
+						bai_xes[i].hien_thi();
+						break;
+					}
+				}
+                cout << "Ko tim thay bai";
                 break;
             }
             case 7: {
                 string loai;
                 cout << "Loai xe: "; cin >> loai;
                 int dem; double tong;
-                if (co1 && bai1.co_loai(loai, dem, tong)) bai1.hien_thi();
-                if (co2 && bai2.co_loai(loai, dem, tong)) bai2.hien_thi();
-                if (co3 && bai3.co_loai(loai, dem, tong)) bai3.hien_thi();
+				for (int i = 0; i < max_bai; ++i) {
+					if (co[i] && bai_xes[i].co_loai(loai, dem, tong)) {
+						bai_xes[i].hien_thi();
+					}
+				}
                 break;
             }
             case 8: {
