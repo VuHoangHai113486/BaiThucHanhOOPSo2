@@ -73,6 +73,7 @@ public:
     bool bai_day() const;
 	bool them_xe_vao(const phuong_tien& v);
     int tim_chi_so_xe(int id_xe) const;
+    void hien_thi_bai_xe() const;
 };
 
 bai_xe::bai_xe() : ma_bai(0), kich_thuoc('S'), co1(false), co2(false), co3(false) {}
@@ -187,6 +188,18 @@ int bai_xe::tim_chi_so_xe(int id_xe) const {
 	return -1;
 }
 
+void bai_xe::hien_thi_bai_xe() const {
+    int cap = (kich_thuoc == 'S') ? 1 : (kich_thuoc == 'M') ? 2 : 3;
+    int so_xe = co1 + co2 + co3;
+    cout << "Bai " << ma_bai << " [" << kich_thuoc << "] "
+        << so_xe << "/" << cap << " xe\n";
+	for (int i = 0; i < so_xe_hien_tai; ++i) {
+		if (co[i]) {
+			phuong_tiens[i].hien_thi();
+		}
+	}
+}
+
 class SystemInterface {
 private:
 	static const int max_bai = 10;
@@ -217,7 +230,7 @@ bool SystemInterface::ton_tai_bai(int ma) const {
 }
 bool SystemInterface::ton_tai_xe(int ma) const {
 	for (int i = 0; i < max_bai; ++i) {
-		if (co[i] && bai_xes[i].chua(ma)) {
+		if (co[i] && bai_xes[i].tim_chi_so_xe(ma) != -1) {
 			return true;
 		}
 	}
@@ -225,7 +238,15 @@ bool SystemInterface::ton_tai_xe(int ma) const {
 }
 int SystemInterface::sinh_id() const {
     srand(time(0));
-    return rand() % 10000;
+    bool sinhma = true;
+    int ma;
+    while (sinhma == true) {
+		ma = rand() % 10000;
+        if(!ton_tai_bai(ma)) {
+            sinhma = false;
+        }
+    }
+    return ma;
 }
 
 void SystemInterface::runMenu() {
@@ -248,6 +269,10 @@ void SystemInterface::runMenu() {
             case 1: {
                 int ma; char kt;
                 cout << "Ma bai: "; cin >> ma;
+				if (ton_tai_bai(ma)) {
+					cout << "Bai da ton tai\n";
+					ma = sinh_id();
+				}
                 cout << "Kich thuoc (S/M/L): "; cin >> kt;
                 if (!co1) { 
                     bai1 = bai_xe(ma, kt);
@@ -271,6 +296,10 @@ void SystemInterface::runMenu() {
             case 2: {
                 int ma, gio, tg; string loai;
                 cout << "Ma xe: "; cin >> ma;
+                if (ton_tai_xe(ma)) {
+					cout << "Xe da ton tai\n";
+					ma = sinh_id();
+                }
                 cout << "Loai (Car/Motorcycle/Bicycle): "; cin >> loai;
                 cout << "Gio vao (0-23): "; cin >> gio;
                 cout << "Thoi luong (1-23): "; cin >> tg;
