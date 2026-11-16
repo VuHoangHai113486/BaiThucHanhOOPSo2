@@ -376,7 +376,22 @@ void SystemInterface::runMenu() {
             }
             case 8: {
                 string loai_arr[3] = { "Car", "Motorcycle", "Bicycle" };
-                for (int t = 0; t < 3; ++t) {
+
+                for (int i = 0; i < 3; ++i) {
+					int dem = 0; double tong = 0;
+                    for (int j = 0; j < max_bai; ++j) {
+                        if(co[j]){
+                            int d, double s;
+							bai_xes[j].co_loai(loai_arr[i], d, s);
+                            dem += d; tong += s;
+                        }
+                    }
+					cout << loai_arr[i] << ": ";
+					if (dem == 0) cout << "khong co xe\n";
+					else cout << dem << " xe | TB: $" << fixed << setprecision(2) << tong / dem << "\n";
+                }
+
+                /*for (int t = 0; t < 3; ++t) {
                     int dem = 0; double tong = 0;
                     int d; double s;
                     if (co1) { bai1.co_loai(loai_arr[t], d, s); dem += d; tong += s; }
@@ -386,7 +401,7 @@ void SystemInterface::runMenu() {
                     if (dem == 0) cout << "khong co xe\n";
                     else cout << dem << " xe | TB: $" << fixed << setprecision(2) << tong / dem << "\n";
                 }
-                break;
+                break;*/
             }
             case 9: {
                 return;
